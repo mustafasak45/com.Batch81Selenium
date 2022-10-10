@@ -1,0 +1,189 @@
+İLK BAGLANTI KODLARI:
+
+	System.setProperty("webdriver.chrome.driver","src/resources/drivers/chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+----------------------------------------------------------------------------------------------------------
+
+SİTEYE GİTME KODU:
+ 	
+	driver.get("https://www.amazon.com/");
+
+----------------------------------------------------------------------------------------------------------
+SİTENİN BAŞLIĞINI YAZDIRMA KODU:
+
+            System.out.println("Actual Title : "+driver.getTitle()); // Gidilen sitenin başlığını yazdırır
+----------------------------------------------------------------------------------------------------------
+GİRİLEN SİTENİN URL'SiNİ GÖSTERİR:
+
+	   System.out.println("Actual Url "+driver.getCurrentUrl()); // Gidilen sayfanın Url'ini getirir
+----------------------------------------------------------------------------------------------------------
+GİRİLEN SİTENİN KAYNAK KODLARINI GÖSTERİR:
+
+	  System.out.println(driver.getPageSource());
+----------------------------------------------------------------------------------------------------------
+SAYFAYI MAXIMUM BOYUTA ULAŞTIRIR:
+
+         driver.manage().window().maximize();
+
+----------------------------------------------------------------------------------------------------------
+SAYFANIN KAYNAK KODLARINDA İSTENEN KELİME GEÇİP GEÇMEDİĞİNİ KONTROL ETMEK İÇİN:
+
+  Kaynak kodların içinde "Gateway" kelisinin olduğunu test ediniz...       
+        
+        if (driver.getPageSource().contains("Gateway")){
+            System.out.println("PageSourse testi PASSED");
+        }else System.out.println("PageSourse testi FAILED");
+
+----------------------------------------------------------------------------------------------------------
+SAYFAYI KAPATMA KODU:
+
+        driver.close(); // sayfayı kapatır
+
+----------------------------------------------------------------------------------------------------------
+BİRDEN FAZLA SAYFA VARSA HEPSİNİ KAPATMA KODU:
+	
+	driver.quit(); // birden fazla sayfa varsa hepsini kapatır
+
+----------------------------------------------------------------------------------------------------------
+SAYFANIN BAŞLIGININ BELİRTİLEN KELİME GEÇİP GEÇMEDİĞİNİ KONTROL ETMEK İÇİN:
+
+Başlığın "Amazon" içerdiğini test ediniz
+        
+        if (driver.getTitle().contains("Amazon")){
+            System.out.println("Title testi PASSED");
+        } else System.out.println("Title testi FAILED");
+
+----------------------------------------------------------------------------------------------------------
+
+URL'NİN BELİRTİLEN KELİMENİN İÇERİP İÇERMEDİĞİNİ KONTROL ETMEK İÇİN:
+
+Url'nin Amazon içerdiğini test ediniz
+       
+        if (driver.getCurrentUrl().contains("Amazon")){
+            System.out.println("Url testi PASSED");
+        }else System.out.println("Url testi FAILED");
+
+----------------------------------------------------------------------------------------------------------
+		::::::::::::NAVİGATE METHODLARİ::::::::::::
+
+driver.navigate().to("https://amazon.com"); //amazon sitesine gider, driver.navigate().to() methodu sayfada ileri geri yapıcaksak kullanılır
+driver.navigate().back(); // Bir önceki sayfaya geri döner.
+driver.navigate().forward(); // ilk sayfadan ileriye gider
+driver.navigate().refresh(); // sayfayı yeniler
+----------------------------------------------------------------------------------------------------------
+	::::::::::::::::::SAYFA KONUMU VE BOYUTU İLE İLGİLİ METHODLAR::::::::::::::::::::
+
+System.out.println("Pencere Konumu = " + driver.manage().window().getPosition());  //	Acilan browser'in konumunu verir
+System.out.println("Pencere Olculeri = " + driver.manage().window().getSize());    //	Acilan browser'in olculerini verir
+driver.manage().window().minimize();	//	Pencereyi simge durumuna getirir
+driver.manage().window().fullscreen();	//        Sayfayi fullscreen yapar
+
+driver.manage().window().setPosition(new Point(20,20));		//Sayfanın konumunu belirttiğimiz boyuta getirir.
+driver.manage().window().setSize(new Dimension(600,300));	//Sayfanın boyutunu belirttiğimiz boyuta getirir.
+		
+----------------------------------------------------------------------------------------------------------
+
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));//sayfa açılıncaya kadar max sn süresini test eder
+
+----------------------------------------------------------------------------------------------------------
+
+	::::::::::::::::GİRİLEN BİR SİTEDE "Nutella" ARAMASI YAPMA KODU:::::::::::::
+
+ID İLE ARAMA YAPMA==>>>
+
+NOT: Burdaki "twotabsearchtextbox" id'sini sitenin arama textbox'ında sağtık-->incele dedikten sonra çıkan kaynak kodundan aldık.
+     Önemli nokta bu id nin UNIQE olması lazım, bunu da CTL+F yapıp başka var mı diye kontrol ettik.
+
+Tek satırdaki hali= driver.findElement(By.id("twotabsearchtextbox")).sendKeys("Nutella"+ Keys.ENTER);
+
+Variable atayarak yapılan hali : WebElement aramaKutusu = driver.findElement(By.id("twotabsearchtextbox"));
+        			 aramaKutusu.sendKeys("Nutella"+ Keys.ENTER);
+
+
+NAME İLE ARAMA==>>>
+
+        WebElement aramaKutusu = driver.findElement(By.name("field-keywords"));
+        aramaKutusu.sendKeys("Nutella"+ Keys.ENTER); // uniqe olduğu için sorunsuz çalışır
+
+
+CLASS NAME İLE ARAMA==>>>
+        
+        WebElement aramaKutusu = driver.findElement(By.className("nav-search-field "));
+        
+        Bu locatar çalismadı
+        Locatar alırken gözümüzden kaçan detaylar olabilir
+        aldığımız bir locatar çalışmazsa alternatif locatorlar denemeliyiz
+
+
+----------------------------------------------------------------------------------------------------------
+	:::::::::::::::::USER ID DOĞRULAMA İÇİN "isDisplayed()" KOMUTUNU KULLANMA::::::::::
+
+	WebElement expectedUser = driver.findElement(By.className("navbar-text"));
+
+        if (expectedUser.isDisplayed()){//isDisplayed boolean dondurur. Belirtilen element görünüp görünmedigini test eder
+            System.out.println("ExpectedUser Testi PASSED "+expectedUser.getText());
+        }else System.out.println("ExpectedUser Testi FAILED");
+         
+
+----------------------------------------------------------------------------------------------------------
+SAYFADAKİ LİNKLERDEN İSTEDİĞİMİZE TIKLAMA KODU:
+
+NOT:Buradaki önemli nokta tırnak içine yazılan yazı sitedki <a>...</a> tagi arasındaki yazıdır. Yine bunun UNİQE olmasına dikket edilmelidir
+
+  driver.findElement(By.partialLinkText("Click here to go to amazon.com.")).click(); // a tag'ındaki link isminden istediğimiz bir parçayla locate edebiliriz.Link ismi uzunsa birazini kopyalar bu formda kullaniriz.
+  driver.findElement(By.linkText("Sell products on Amazon")).click();//sitedeki tag: <a href="https://go.thehub-amazon.com/amazon-hub-locker" class="nav_a">Host an Amazon Hub</a>
+
+
+----------------------------------------------------------------------------------------------------------
+SAYFADAKİ(SİTEDEKİ) ELEMENTLER DEN BELİRTTİĞİMİZİ SAYMA:
+
+tag(<a></a>) için;
+	List<WebElement> tag = driver.findElements(By.tagName("a"));
+        System.out.println(tag.size());
+
+className(class) için;
+	List<WebElement> className = driver.findElements(By.className("card-flow-row-break"));
+        System.out.println(className.size());
+
+----------------------------------------------------------------------------------------------------------
+        :::::::::::::::::::SİTEDEİK BİR ELEMENTİN SAYFADAKİ KONUMUNU YAZDIRMA ( getLocation() )::::::::::::
+
+-ÖRNEK:Arama kutusunun konumunu yazdırın.
+
+  System.out.println("Arama Kutusunun Konumu = " 
+		    + driver.findElement(By.id("twotabsearchtextbox")).getLocation());
+
+NOT: Bu örnekte arama kutusunun sitedeki id'sine göre getLocation()' na baktık.
+
+------------------------------------------------------------------------------------------------------------
+	::::::::::::::::::ATTRIBUTE DEGERİNİ KONTROL ETME::::::::::::::::::::::
+
+    -Arama kutusunun name atributu'nun değerinin field-keywords olduğunu test ediniz
+
+	WebElement aramaKutusu=driver.findElement(By.id("twotabsearchtextbox"));
+
+        if (aramaKutusu.getAttribute("name").equals("field-keywords")) {
+            System.out.println("Atribute TESTI PASSED");
+        }else System.out.println("Atribute TESTI FAILED");
+
+------------------------------------------------------------------------------------------------------------
+	:::::::::::::::::::::TAGNAME DEGERİNİ KONTROL ETME::::::::::::::::::::::::
+
+-Arama kutusunun tagName'inin input olduğunu test ediniz
+
+        WebElement aramaKutusu=driver.findElement(By.id("twotabsearchtextbox"));
+
+        if (aramaKutusu.getTagName().equals("input")) {
+            System.out.println("TagName Testi PASSED");
+        }else System.out.println("TagName Testi FAILED");
+
+------------------------------------------------------------------------------------------------------------
+
+ //amazonda arama yaptıktan sonra sol üst tarafta"1-16 of 109 results for "city bike"" diye yazan String'i split ile
+          // arraye ekledik ve onun istedigimiz elementini yazdirdik
+        System.out.println("Arama sonucu : "+aramaSonucu[0]); //Arama sonucu : 1-16
+        System.out.println("Arama sonucu : "+aramaSonucu[1]); //Arama sonucu : of
+        System.out.println("Arama sonucu : "+aramaSonucu[2]); //Arama sonucu : 109
+
+-------------------------------------------------------------------------------------------------------------
+
